@@ -9,9 +9,14 @@ from common.question import Question
 
 
 class Perceptron(Model):
-    def __init__(self, training_set=None, testing_set=None):
+    def __init__(self, training_set=None, testing_set=None, weights=None):
         Model.__init__(self, training_set, testing_set)
-        self.weights = np.array([0., 0., 0.])
+
+        if weights is None:
+            self.weights = np.array([[0., 0., 0.]]).T
+        else:
+            self.weights = weights
+
         # points that define the target function
         self.point1 = (random.uniform(-1, 1), random.uniform(-1, 1))
         self.point2 = (random.uniform(-1, 1), random.uniform(-1, 1))
@@ -24,8 +29,8 @@ class Perceptron(Model):
         return 1 if y > (slope * (x - x1) + y1) else -1
 
     def hypothesis(self, x, y):
-        feature = np.array([1., x, y])
-        return 1 if np.dot(self.weights, feature) > 0 else -1
+        feature = np.array([[1., x, y]])
+        return 1 if np.dot(feature, self.weights) > 0 else -1
 
     def train(self):
         misclassified = []
@@ -47,7 +52,7 @@ class Perceptron(Model):
             else:
                 iterations += 1
                 point, intended = random.choice(misclassified)
-                adapt = np.array([1., point[0], point[1]]) * intended
+                adapt = np.array([[1., point[0], point[1]]]).T * intended
                 self.weights += adapt
                 misclassified = []
 
@@ -86,17 +91,17 @@ def test_run(data_size, test_runs):
 
 
 if __name__ == "__main__":
-    question7 = Question("[n = 10] average number of iterations to converge",
-                         [1, 15, 300, 5000, 10000], 'b', Question.abs_to_zero)
+    question7 = Question("7. [n = 10] average number of iterations to converge",
+                         [1, 15, 300, 5000, 10000], 'b')
 
-    question8 = Question("[n = 10] average error",
-                         [0.001, 0.01, 0.1, 0.5, 0.8], 'c', Question.closest)
+    question8 = Question("8. [n = 10] average error",
+                         [0.001, 0.01, 0.1, 0.5, 0.8], 'c')
 
-    question9 = Question("[n = 100] average number of iterations to converge",
-                         [50, 100, 500, 1000, 5000], 'b', Question.abs_to_zero)
+    question9 = Question("9. [n = 100] average number of iterations to converge",
+                         [50, 100, 500, 1000, 5000], 'b')
 
-    question10 = Question("[n = 100] average error",
-                          [0.001, 0.01, 0.1, 0.5, 0.8], 'b', Question.closest)
+    question10 = Question("10. [n = 100] average error",
+                          [0.001, 0.01, 0.1, 0.5, 0.8], 'b')
 
     # first test run with n = 10
     iterations, error = test_run(10, 1000)

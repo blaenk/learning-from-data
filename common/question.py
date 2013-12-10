@@ -2,11 +2,15 @@ import operator
 
 
 class Question:
-    def __init__(self, label, choices, answer, test):
+    def __init__(self, label, choices, answer, score=None):
         self.label = label
         self.choices = choices
         self.answer = answer
-        self.test = test
+
+        if score is None:
+            self.score = lambda result, choice: abs(result - choice)
+        else:
+            self.score = score
 
     def to_letter(self, index):
         return chr(index + ord('a'))
@@ -15,16 +19,17 @@ class Question:
         return ord(letter) - ord('a')
 
     def check(self, result):
-        nearest = self.test(self, result)
+        nearest = self.closest(result)
 
         print(self.label)
-        print "\tresult: {0}\t nearest: {1}".format(result, self.choice(nearest)),
-        print "\tanswer: {0}\t".format(self.choice(self.answer)),
+        print("  result:  {0}".format(result))
+        print("  nearest: {0}".format(self.choice(nearest)))
+        print("  answer:  {0}".format(self.choice(self.answer)))
 
         if nearest == self.answer:
-            print("CORRECT")
+            print("  + CORRECT")
         else:
-            print("INCORRECT")
+            print("  - INCORRECT")
 
     def closest_choice(self, scores, result):
         # returns index, nearest
@@ -35,13 +40,8 @@ class Question:
         value = self.choices[self.to_index(letter)]
         return "{0}. {1}".format(letter, value)
 
-    def abs_to_zero(self, result):
-        # ends up with list of absolute distances to zero
-        scores = [abs(result - choice) for choice in self.choices]
-        return self.closest_choice(scores, result)
-
     def closest(self, result):
-        scores = [abs(result - choice) for choice in self.choices]
+        # ends up with list of distances to zero
+        scores = [self.score(result, choice) for choice in self.choices]
         return self.closest_choice(scores, result)
-
 
