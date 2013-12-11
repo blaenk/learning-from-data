@@ -2,9 +2,9 @@ Programming assignments for Cal Tech's [Machine Learning](http://work.caltech.ed
 
 The assignments are done in Python with [NumPy](http://www.numpy.org/) and other [SciPy](http://www.scipy.org/) packages.
 
-# Automated Grading
+### Automated Grading
 
-The `Question` class in `common.question` can help grade the assignment. It takes a label (the question itself), a list of possible choices from the assignment, the actual answer (from the answer key) and an optional scoring function for each choice. It's constructor is:
+I created a `Question` class in `common.question` that can help grade the assignment. It takes a label (the question itself), a list of possible choices from the assignment, the actual answer (from the answer key) and an optional scoring function for each choice. Its constructor is:
 
 ``` python
 Question(label, choices, answer, score=None)
@@ -41,8 +41,8 @@ question9 = Question("9. hypothesis",
                       [-1, -0.5, 0.08, 1.50, 0.15, 0.15]], 'a',
                      # polynomial scoring lambda
                      lambda result, choice:
-                     sum([abs(result_nomial - nomial)
-                         for result_nomial, nomial
+                     sum([abs(result_coeff - coeff)
+                         for result_coeff, coeff
                          in zip(result, choice)]))
 ```
 

@@ -71,8 +71,8 @@ if __name__ == "__main__":
                           [-1, -0.5, 0.08, 1.50, 0.15, 0.15]], 'a',
                          # polynomial scoring lambda
                          lambda result, choice:
-                         sum([abs(result_nomial - nomial)
-                             for result_nomial, nomial
+                         sum([abs(result_coeff - coeff)
+                             for result_coeff, coeff
                              in zip(result, choice)]))
 
     out_sample, weights = test_run(True, True)
