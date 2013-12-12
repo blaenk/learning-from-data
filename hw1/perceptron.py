@@ -21,16 +21,16 @@ class Perceptron(Model):
         self.point1 = (random.uniform(-1, 1), random.uniform(-1, 1))
         self.point2 = (random.uniform(-1, 1), random.uniform(-1, 1))
 
-    def target(self, x, y):
+    def target(self, feature):
+        x, y = feature[1], feature[2]
         x1, y1 = self.point1
         x2, y2 = self.point2
         slope = (y2 - y1) / (x2 - x1)
         # simple check to see if point (x, y) is above or below the line
         return 1 if y > (slope * (x - x1) + y1) else -1
 
-    def hypothesis(self, x, y):
-        feature = np.array([[1., x, y]])
-        return 1 if np.dot(feature, self.weights) > 0 else -1
+    def hypothesis(self, feature):
+        return np.sign(np.dot(feature, self.weights))
 
     def train(self):
         misclassified = []
@@ -38,11 +38,11 @@ class Perceptron(Model):
 
         while True:
             # pick a point and check if it's misclassified
-            for x, y in self.training_set:
-                intended = self.target(x, y)
+            for feature in self.training_set:
+                intended = self.target(feature)
 
-                if self.hypothesis(x, y) != intended:
-                    misclassified += [((x, y), intended)]
+                if self.hypothesis(feature) != intended:
+                    misclassified += [(feature, intended)]
 
             # set is completely separated
             if not misclassified:
@@ -51,8 +51,8 @@ class Perceptron(Model):
             # and adjust the perceptron in its direction
             else:
                 iterations += 1
-                point, intended = random.choice(misclassified)
-                adapt = np.array([[1., point[0], point[1]]]).T * intended
+                feature, intended = random.choice(misclassified)
+                adapt = np.array([feature]).T * intended
                 self.weights += adapt
                 misclassified = []
 
@@ -61,8 +61,8 @@ class Perceptron(Model):
     def test(self):
         mismatches = 0
 
-        for x, y in self.testing_set:
-            if self.hypothesis(x, y) != self.target(x, y):
+        for feature in self.testing_set:
+            if self.hypothesis(feature) != self.target(feature):
                 mismatches += 1
 
         return mismatches / float(len(self.testing_set))
@@ -75,9 +75,9 @@ def test_run(data_size, test_runs):
     avg_error = 0
 
     for i in xrange(test_runs):
-        training_set = [(random.uniform(-1, 1), random.uniform(-1, 1))
+        training_set = [[1., random.uniform(-1, 1), random.uniform(-1, 1)]
                         for i in xrange(training_size)]
-        testing_set = [(random.uniform(-1, 1), random.uniform(-1, 1))
+        testing_set = [[1., random.uniform(-1, 1), random.uniform(-1, 1)]
                        for i in xrange(testing_size)]
 
         pla = Perceptron(training_set=training_set, testing_set=testing_set)

@@ -27,9 +27,6 @@ class LinearRegression(Model):
         # simple check to see if point (x, y) is above or below the line
         return 1 if y > (slope * (x - x1) + y1) else -1
 
-    def hypothesis(self, feature):
-        return 1 if np.dot(feature, self.weights) > 0 else -1
-
     def train(self, noise=None):
         data_matrix = np.array(self.training_set)
         target_vector = np.array([[self.target(point)] for point in self.training_set])
@@ -58,13 +55,8 @@ class LinearRegression(Model):
         if noise is not None:
           self.add_noise(targets, noise)
 
-        mismatches = 0
-
-        for index, point in enumerate(self.testing_set):
-            if self.hypothesis(point) != targets[index]:
-                mismatches += 1
-
-        return mismatches / float(len(self.testing_set))
+        tys = np.sign(np.dot(self.testing_set, self.weights))
+        return len(targets[tys != targets]) / float(len(targets))
 
 def test_run(test_runs, in_sample, perceptron, training_size=100, testing_size=1000):
     avg_error = 0
@@ -83,8 +75,7 @@ def test_run(test_runs, in_sample, perceptron, training_size=100, testing_size=1
         lr.train()
 
         if perceptron:
-          perceptron_set = scipy.delete(np.array(training_set), 0, 1)
-          pla = Perceptron(training_set=perceptron_set, weights=lr.weights)
+          pla = Perceptron(training_set=training_set, weights=lr.weights)
 
           # this is actually the number of iterations
           avg_error += pla.train()
