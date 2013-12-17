@@ -36,7 +36,8 @@ class LogisticRegression(Model):
         return np.divide(num, den)
 
     def train(self):
-        target_vector = np.array([[self.target(point)] for point in self.training_set])
+        target_vector = np.array([[self.target(point)]
+                                  for point in self.training_set])
 
         learning_rate = 0.01
         previous_weights = [-1, -1, -1]
