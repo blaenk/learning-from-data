@@ -20,7 +20,6 @@ def test_run(runs, size):
     run = 0
 
     while run < runs:
-        print run
         training_set = np.array([[1., random.uniform(-1, 1), random.uniform(-1, 1)]
                         for i in xrange(size)])
         testing_set = np.array([[1., random.uniform(-1, 1), random.uniform(-1, 1)]
