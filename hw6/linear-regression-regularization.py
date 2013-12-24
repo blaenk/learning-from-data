@@ -40,7 +40,7 @@ def get_data(url):
     labels = [[e[-1]] for e in data]
     return np.array(training), np.array(labels)
 
-def test_run(test_runs, k=None):
+def test_run(k=None):
     avg_in, avg_out = 0, 0
 
     training_set, training_labels = get_data("http://work.caltech.edu/data/in.dta")
@@ -51,21 +51,18 @@ def test_run(test_runs, k=None):
     transformed_training_set = [transform(feature) for feature in training_set]
     transformed_testing_set = [transform(feature) for feature in testing_set]
 
-    for i in xrange(test_runs):
-        lr = LinearRegression(transformed_training_set, transformed_training_set)
+    lr = LinearRegression(transformed_training_set, transformed_training_set)
 
-        if k is not None:
-            lr.train(training_labels, k)
-        else:
-            lr.train(training_labels)
+    if k is not None:
+        lr.train(training_labels, k)
+    else:
+        lr.train(training_labels)
 
-        avg_in += lr.test(training_labels)
+    avg_in += lr.test(training_labels)
 
-        lr.testing_set = transformed_testing_set
-        avg_out += lr.test(testing_labels)
+    lr.testing_set = transformed_testing_set
+    avg_out += lr.test(testing_labels)
 
-    avg_in /= float(test_runs)
-    avg_out /= float(test_runs)
     return (avg_in, avg_out)
 
 if __name__ == "__main__":
@@ -77,7 +74,7 @@ if __name__ == "__main__":
                           (0.05, 0.10)], 'a',
                          lambda result, choice: abs(result[0] - choice[0]) + abs(result[1] - choice[1]))
 
-    question2.check(test_run(100))
+    question2.check(test_run())
 
     question3 = Question("3. weight decay (in-sample, out-of-sample)",
                          [(0.01, 0.02),
@@ -87,7 +84,7 @@ if __name__ == "__main__":
                           (0.03, 0.10)], 'd',
                          lambda result, choice: abs(result[0] - choice[0]) + abs(result[1] - choice[1]))
 
-    question3.check(test_run(100, -3))
+    question3.check(test_run(-3))
 
     question4 = Question("4. k = 3 (in-sample, out-of-sample)",
                          [(0.2, 0.2),
@@ -97,13 +94,13 @@ if __name__ == "__main__":
                           (0.4, 0.4)], 'e',
                          lambda result, choice: abs(result[0] - choice[0]) + abs(result[1] - choice[1]))
 
-    question4.check(test_run(100, 3))
+    question4.check(test_run(3))
 
     question5 = Question("5. smallest in-sample k",
                          [2, 1, 0, -1, -2], 'd')
 
     choices = [2, 1, 0, -1, -2]
-    errors = [test_run(100, k) for k in choices]
+    errors = [test_run(k) for k in choices]
     zipped = zip(choices, errors)
     answer = min(zipped, key=lambda c: c[1][1])[0]
     question5.check(answer)
@@ -112,7 +109,7 @@ if __name__ == "__main__":
                          [0.04, 0.06, 0.08, 0.10, 0.12], 'b')
 
     choices = range(-20, 20 + 1)
-    errors = [test_run(100, k) for k in choices]
+    errors = [test_run(k) for k in choices]
     zipped = zip(choices, errors)
     answer = min(zipped, key=lambda c: c[1][1])[1][1]
     question6.check(answer)
